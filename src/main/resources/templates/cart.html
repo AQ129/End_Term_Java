@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Shopping Cart</title>
+	<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet"
+		  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css">
+	<script src="/bootstrap/js/bootstrap.js"></script>
+	<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+	<script src="https://www.paypal.com/sdk/js?client-id=AT6aQ1_2uncTDEXChEo3Ojtaw7pvDW8Ld_G7LjuITOZj-2k7IBEcG9vWBUytcMlbUAbclYle7tiVTADz&currency=SGD&components=buttons"></script>
+</head>
+<div th:replace="fragments/headers"></div>
+<body>
+<div class="container">
+	<main>
+		<div class="container ">
+			<div class="row fs-1 text-center">
+				<p><i class="fa-solid fa-cart-shopping"></i> SHOPPING CART</p>
+				<div class="alert alert-primary" role="alert" th:text="${success}" th:if="${success}"></div>
+			</div>
+			<div class="row mb-5">
+				<!-- shopping cart -->
+				<div class="col-8">
+					<div class="container ">
+						<!-- shopping cart items header -->
+						<div class="row m-3 border-top border-bottom fs-5">
+							<div class="col-2"><i class="fa-brands fa-product-hunt"></i> Product</div>
+							<div class="col-3"><i class="fa-solid fa-audio-description"></i> Description</div>
+							<div class="col-2"><i class="fa-solid fa-money-bill"></i> PRICE</div>
+							<div class="col-3"><i class="fa-solid fa-star"></i> QUANTITY</div>
+							<div class="col-2"><i class="fa-solid fa-square-plus"></i> TOTAL</div>
+						</div>
+						<!-- shopping cart rows -->
+						<div class="row m-3 border-bottom"
+							 th:each="cartItem : ${cartItemList}">
+							<!-- Item name, description, image -->
+							<div class="col mb-3">
+								<h5 th:text="${cartItem.accessory.name}"></h5>
+								<img width="100px" th:src="@{'/images/' + ${cartItem.accessory.imgName}}" alt="">
+							</div>
+							<div class="col-3 align-self-center" th:text="${cartItem.accessory.description}"></div>
+							<!-- Item quantity, price, links -->
+							<div class="col align-self-center" th:text="'$'+${cartItem.accessory.price}"></div>
+							<div class="col align-self-center">
+
+								<!-- Update item quantity form -->
+								<form th:action="@{/cart/update/{id}(id=${cartItem.id})}" method="post">
+									<div class="col mb-3">
+										<input type="number" name="quantity" th:value="${cartItem.quantity}" th:id="${cartItem.id}" />
+									</div>
+									<span><button style="margin-right:2px; background-color:cadetblue; outline:none; border:none;" class="btn btn-primary"><i class="far fa-edit" style="font-size:16px"></i></button>
+										<!-- Remove item link -->
+										<a style="margin-right:4px; background-color:indianred; outline:none; border:none;" class="btn btn-primary" th:href="@{/cart/remove/{id}(id=${cartItem.id})}"><i class="far fa-trash-alt" style="font-size:20px;"></i></a>
+										</span>
+								</form>
+								<br>
+
+							</div>
+							<div class="col align-self-center" th:text="'$'+${cartItem.subTotal}"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6 mb-3 mb-m-1 order-md-1 text-md-left">
+					<a class="btn btn-primary" th:href="@{/}" role="button" style="background-color:peru; color:black; outline:none; border:none; font-weight:bold">Continue shopping <i class="fa-solid fa-face-smile-beam"></i></a>
+				</div>
+				<!-- Order summary -->
+				<div class="col-4">
+					<div class="container ">
+						<div class="row  m-3 border-top border-bottom fw-bold">
+							<div class="col text-center fs-3"><i class="fa-solid fa-cart-plus"></i> ORDER SUMMARY</div>
+						</div>
+						<!-- Order summary rows -->
+						<div class="row m-3 border-bottom" th:each="cartItem: ${cartItemList}">
+							<div class="col fs-6">
+								<p th:text="${cartItem.accessory.name}+' x ' +${cartItem.quantity}"></p>
+							</div>
+							<div class="col fs-6 text-end">
+								<p th:text="'$'+${cartItem.subTotal}"></p>
+							</div>
+						</div>
+						<div class="row  m-3 border-bottom fw-bold">
+							<div class="col fs-6">
+								<p><i class="fa-solid fa-square-plus"></i> TOTAL</p>
+							</div>
+							<div class="col fs-6 text-end">
+								<p id="cartTotal" th:text="'$'+${cartTotal}"></p>
+							</div>
+						</div>
+						<div th:replace="fragments/paypal"></div>
+						<div class="text-center"><span class="fw-bold text-muted"><i class="fa-solid fa-circle-exclamation"></i> Items will be removed if quantity value is 0 and below</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+</div>
+</body>
+<div th:replace="fragments/footer"></div>
+</html>
+
